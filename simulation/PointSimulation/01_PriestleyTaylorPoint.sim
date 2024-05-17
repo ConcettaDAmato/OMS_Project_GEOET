@@ -1,0 +1,99 @@
+import static oms3.SimBuilder.instance as OMS3
+import static oms3.SimBuilder.*
+def home = oms_prj
+
+def startDate	= "2014-01-01 00:00"
+def endDate		= "2014-01-10 00:00"
+def basin 		= "Cavone"
+def ID			= 1
+def timestep 	= 60
+
+OMS3.sim {
+	resource "$oms_prj/lib"    
+	model(while:"readerAirTemperature.doProcess") {
+		components {
+			//Input-Output components
+			"input"     "it.geoframe.blogspot.geoet.inout.InputReaderMain"
+			"output"    "it.geoframe.blogspot.geoet.inout.OutputWriterMain"
+			
+			//GEOET components
+			"priestleyTaylor"               "it.geoframe.blogspot.geoet.priestleytaylor.PriestleyTaylorPotentialETSolverMain"
+			
+			"readerAirTemperature"			"org.hortonmachine.gears.io.timedependent.OmsTimeSeriesIteratorReader"
+			"readerNetRadiation"            "org.hortonmachine.gears.io.timedependent.OmsTimeSeriesIteratorReader"
+			"readerAtmosphericPressure"     "org.hortonmachine.gears.io.timedependent.OmsTimeSeriesIteratorReader"
+			"readerSoilHeatFlux"          	"org.hortonmachine.gears.io.timedependent.OmsTimeSeriesIteratorReader"
+
+			"writerLatentHeatPT"			"org.hortonmachine.gears.io.timedependent.OmsTimeSeriesIteratorWriter"      
+			"writerETPriestleyTaylor"		"org.hortonmachine.gears.io.timedependent.OmsTimeSeriesIteratorWriter"      			         
+			
+			}  
+			parameter{        
+				
+				// GEOgraphy PARAMETERS 
+				"input.elevation" 579 //[m]
+                    
+				// PARAMETERS
+				"priestleyTaylor.alpha"						1.26
+		        "priestleyTaylor.soilFluxParameterDay"		0.35
+		        "priestleyTaylor.soilFluxParameterNight"	0.75
+        		"output.doPrintOutputPT"					true
+        		
+		        "input.temporalStep"			"${timestep}"
+        		"input.tStartDate"				"${startDate}"
+        		
+        		// READERS
+				"readerAirTemperature.file"         			"${home}/data/${basin}/${ID}/airT_${ID}.csv"
+				"readerAirTemperature.idfield"          		"ID"		
+				"readerAirTemperature.tStart"           		"${startDate}"
+				"readerAirTemperature.tEnd"         			"${endDate}"
+				"readerAirTemperature.tTimestep"            	"${timestep}"
+				"readerAirTemperature.fileNovalue"          	"-9999.0"       
+				
+				"readerNetRadiation.file"                       "${home}/data/${basin}/${ID}/Net_${ID}.csv"
+				"readerNetRadiation.idfield"                    "ID"
+				"readerNetRadiation.tStart"                     "${startDate}"
+				"readerNetRadiation.tEnd"                       "${endDate}"
+				"readerNetRadiation.tTimestep"                  "${timestep}"
+				"readerNetRadiation.fileNovalue"                "-9999.0"	
+			
+				"readerAtmosphericPressure.file"                "${home}/data/${basin}/${ID}/nan.csv"
+				"readerAtmosphericPressure.idfield"             "ID"		
+				"readerAtmosphericPressure.tStart"              "${startDate}"
+				"readerAtmosphericPressure.tEnd"                "${endDate}"
+				"readerAtmosphericPressure.tTimestep"           "${timestep}"
+				"readerAtmosphericPressure.fileNovalue"         "-9999.0"      
+				
+				"readerSoilHeatFlux.file"                       "${home}/data/${basin}/${ID}/nan.csv"	
+                "readerSoilHeatFlux.idfield"                    "ID"		
+                "readerSoilHeatFlux.tStart"                     "${startDate}"
+                "readerSoilHeatFlux.tEnd"                       "${endDate}"
+                "readerSoilHeatFlux.tTimestep"                  "${timestep}"
+                "readerSoilHeatFlux.fileNovalue"                "-9999.0"                                                      
+			
+				// WRITERS
+				"writerLatentHeatPT.file"						"${home}/output/${basin}/${ID}/LatentHeat_PT_${ID}.csv" 
+				"writerLatentHeatPT.tStart"						"${startDate}"
+				"writerLatentHeatPT.tTimestep"					"${timestep}"
+				
+				"writerETPriestleyTaylor.file"					"${home}/output/${basin}/${ID}/Evapotranspiration_PT_${ID}.csv" 
+				"writerETPriestleyTaylor.tStart"				"${startDate}"
+				"writerETPriestleyTaylor.tTimestep"				"${timestep}"
+				}
+				
+				
+				connect { 
+				"input.doProcess1"                   	"priestleyTaylor.doProcess3" 
+				"priestleyTaylor.doProcess4"          	"output.doProcess8"	 
+                           
+				"readerAirTemperature.outData"			"input.inAirTemperature"
+				"readerNetRadiation.outData"			"input.inNetRadiation"
+				"readerAtmosphericPressure.outData"		"input.inAtmosphericPressure"	
+				"readerSoilHeatFlux.outData"			"input.inSoilFlux"	
+				"output.outLatentHeatPT"				"writerLatentHeatPT.inData"
+				"output.outEvapoTranspirationPT"   		"writerETPriestleyTaylor.inData"
+				}					
+			}
+	}
+
+
