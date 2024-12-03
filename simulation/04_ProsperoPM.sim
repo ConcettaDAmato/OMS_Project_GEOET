@@ -98,7 +98,7 @@ OMS3.sim {
 				     	
 				"stressfactor.waterWiltingPoint"	0.17   //FAO Table 19
 				"stressfactor.waterFieldCapacity"	0.30   //FAO Table 19
-				"stressfactor.rootsDepth"  			0.75   //FAO Table 22
+				"input.rootsDepth"  			0.75   //FAO Table 22
 				"stressfactor.evaporationDepth"  	0.20   
 				"stressfactor.depletionFraction" 	0.35   //FAO Table 22
 				"stressfactor.cropCoefficient" 		0.95   //FAO Table 12
