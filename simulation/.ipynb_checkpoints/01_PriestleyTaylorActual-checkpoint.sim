@@ -68,7 +68,7 @@ OMS3.sim {
 				//Parameters for the Water Stress 
 				"PTstressfactor.useWaterStress" true 
 				     	
-				""PTstressfactor.waterWiltingPoint"	0.05    //FAO Table 19
+				"PTstressfactor.waterWiltingPoint"	0.05    //FAO Table 19
 				"PTstressfactor.waterFieldCapacity"	0.36    //FAO Table 19
 				"PTstressfactor.depth"  		1.00		//FAO Table 22
 				"PTstressfactor.depletionFraction" 	0.35    //FAO Table 22
